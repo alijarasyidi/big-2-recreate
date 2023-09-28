@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,10 +5,12 @@ using UnityEngine;
 
 namespace Alija.Big2.Client.Gameplay
 {
-    [CreateAssetMenu(fileName = "CardCollectionData")]
-    public class CardCollectionScriptableObject : ScriptableObject
+    [CreateAssetMenu(fileName = "CardCollectionData", menuName = "Data/Card Collection Data")]
+    public class CardCollectionScriptableObject : ScriptableObject, ICardCollection
     {
         [SerializeField]
         private List<Card> _cards = new List<Card>();
+
+        public List<Card> Cards => _cards;
     }
 }
