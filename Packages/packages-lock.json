@@ -6,6 +6,12 @@
       "source": "local",
       "dependencies": {}
     },
+    "com.neuecc.unirx": {
+      "version": "file:../Modules/com.neuecc.unirx",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.2d.animation": {
       "version": "7.0.10",
       "depth": 1,
