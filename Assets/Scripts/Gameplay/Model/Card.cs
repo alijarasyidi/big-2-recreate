@@ -9,6 +9,6 @@ namespace Alija.Big2.Client.Gameplay
     {
         public RankEnum Rank;
         public SuiteEnum Suite;
-        public bool IsRevealed;
+        public CardView CardView = new();
     }
 }
