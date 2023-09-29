@@ -1,5 +1,8 @@
 using Alija.Big2.Client.System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 #nullable enable
 
@@ -8,6 +11,7 @@ namespace Alija.Big2.Client.Gameplay
     public class CardShuffleService : ICardShuffleService
     {
         private List<int> _mapIndex;
+        private int _firstCardIndexCache = 0;
 
         private readonly ICardCollection _cardCollection;
 
@@ -20,6 +24,21 @@ namespace Alija.Big2.Client.Gameplay
             {
                 _mapIndex.Add(i);
             }
+
+            CacheFirstCardIndex();
+        }
+
+        private void CacheFirstCardIndex()
+        {
+            // TODO consider move this functionality to ICardCollection
+            _firstCardIndexCache = _cardCollection.Cards
+                .FindIndex(x => x.Rank == RankEnum.Three && x.Suite == SuiteEnum.Diamond);
+
+            Debug.LogFormat("First turn card index: {0}", _firstCardIndexCache);
+            Debug.LogFormat(
+                "First turn card: {0} {1}",
+                _cardCollection.Cards[_firstCardIndexCache].Rank,
+                _cardCollection.Cards[_firstCardIndexCache].Suite);
         }
 
         public Dictionary<int, List<int>> Shuffle(int playerCount)
@@ -36,6 +55,22 @@ namespace Alija.Big2.Client.Gameplay
             }
 
             return playerShuffleResults;
+        }
+
+        public int GetFirstTurnPlayerIndex(Dictionary<int, List<int>> shuffleResult)
+        {
+            foreach (var player in shuffleResult)
+            {
+                foreach (var cardIndex in player.Value)
+                {
+                    if (cardIndex == _firstCardIndexCache)
+                    {
+                        return player.Key;
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("First card index not found!");
         }
     }
 }

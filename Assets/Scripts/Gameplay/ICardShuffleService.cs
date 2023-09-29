@@ -14,5 +14,7 @@ namespace Alija.Big2.Client.Gameplay
         /// Return dictionary of player index as int and list of shuffled card index
         /// </summary>
         Dictionary<int, List<int>> Shuffle(int playerCount);
+
+        int GetFirstTurnPlayerIndex(Dictionary<int, List<int>> shuffleResult);
     }
 }
