@@ -21,7 +21,9 @@ namespace Alija.Big2.Client.Gameplay
 
             builder.RegisterInstance<ICardCollection>(_cardCollectionData);
 
-            builder.RegisterEntryPoint<GameStateController>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<GameController>(Lifetime.Singleton);
+
+            builder.Register<GameModeResolver>(Lifetime.Singleton);
 
             builder.Register<CardShuffleService>(Lifetime.Singleton)
                 .As<ICardShuffleService>();

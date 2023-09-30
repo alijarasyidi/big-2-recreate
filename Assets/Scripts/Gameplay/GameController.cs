@@ -8,14 +8,20 @@ using VContainer.Unity;
 
 namespace Alija.Big2.Client.Gameplay
 {
-    public class GameStateController : IAsyncStartable
+    public class GameController : IAsyncStartable
     {
         private GameStateEnum _currentState = GameStateEnum.Preparing;
+        // TODO will need to properly implement game mode choose flow. Currently will only do PvCom4
+        private GameModeEnum _gameMode = GameModeEnum.PvCom4;
 
+        private readonly GameModeResolver _gameModeResolver;
         private readonly ICardShuffleService _cardShuffleService;
 
-        public GameStateController(ICardShuffleService cardShuffleService)
+        public GameController(
+            GameModeResolver gameModeResolver,
+            ICardShuffleService cardShuffleService)
         {
+            _gameModeResolver = gameModeResolver;
             _cardShuffleService = cardShuffleService;
         }
 
@@ -23,7 +29,7 @@ namespace Alija.Big2.Client.Gameplay
         {
             Debug.Log("Game preparing...");
 
-            // TODO remove later with starting visual impelemtation
+            // TODO remove later with starting visual implementation
             await UniTask.Delay(1000);
 
             Debug.Log("Game start...");
@@ -37,10 +43,11 @@ namespace Alija.Big2.Client.Gameplay
                 throw new InvalidOperationException("Invalid StartGameAsync call!");
             }
 
-            // TODO resolve game mode
-            int playerCount = 4;
+            _currentState = GameStateEnum.Started;
 
-            var shuffleResult = _cardShuffleService.Shuffle(playerCount);
+            var participants = _gameModeResolver.ResolveParticipants(_gameMode);
+
+            var shuffleResult = _cardShuffleService.Shuffle(participants.Count);
             var firstTurnPlayerIndex = _cardShuffleService.GetFirstTurnPlayerIndex(shuffleResult);
 
             Debug.LogFormat("First turn player index: {0}", firstTurnPlayerIndex);
