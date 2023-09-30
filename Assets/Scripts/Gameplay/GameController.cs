@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using VContainer.Unity;
@@ -11,17 +12,17 @@ namespace Alija.Big2.Client.Gameplay
     public class GameController : IAsyncStartable
     {
         private GameStateEnum _currentState = GameStateEnum.Preparing;
-        // TODO will need to properly implement game mode choose flow. Currently will only do PvCom4
-        private GameModeEnum _gameMode = GameModeEnum.PvCom4;
 
-        private readonly GameModeResolver _gameModeResolver;
+        private Dictionary<ParticipantIdEnum, IParticipant> _participantHasMap = new();
+
+        private readonly ParticipantResolver _participantResolver;
         private readonly ICardShuffleService _cardShuffleService;
 
         public GameController(
-            GameModeResolver gameModeResolver,
+            ParticipantResolver participantResolver,
             ICardShuffleService cardShuffleService)
         {
-            _gameModeResolver = gameModeResolver;
+            _participantResolver = participantResolver;
             _cardShuffleService = cardShuffleService;
         }
 
@@ -45,12 +46,40 @@ namespace Alija.Big2.Client.Gameplay
 
             _currentState = GameStateEnum.Started;
 
-            var participants = _gameModeResolver.ResolveParticipants(_gameMode);
+            // TODO implement game mode service to set and get game mode choosen
+            var choosenGameMode = GameModeEnum.PvCom4;
 
+            var participants = _participantResolver.ResolveParticipants(choosenGameMode);
+
+            // TODO consider make ICardShuffleService.Shuffle also fully responsible for distribute the card to participants
             var shuffleResult = _cardShuffleService.Shuffle(participants.Count);
             var firstTurnPlayerIndex = _cardShuffleService.GetFirstTurnPlayerIndex(shuffleResult);
+            for (int i = 0; i < participants.Count; i++)
+            {
+                participants[i].SetInitialCardInHandIndex(shuffleResult[i]);
+            }
 
-            Debug.LogFormat("First turn player index: {0}", firstTurnPlayerIndex);
+            _participantHasMap.Clear();
+            foreach (var participant in participants)
+            {
+                _participantHasMap.Add(participant.Id, participant);
+            }
+
+            _participantHasMap[participants[firstTurnPlayerIndex].Id].StartTurn(NextTurn);
+        }
+
+        private void NextTurn(ParticipantIdEnum currentParticipantId)
+        {
+            if (_participantHasMap[currentParticipantId].CardCount <= 0)
+            {
+                // TODO handle game finish
+                _currentState = GameStateEnum.Ended;
+            }
+            else
+            {
+                var nextParticipantId = _participantHasMap[currentParticipantId].NextId;
+                _participantHasMap[nextParticipantId].StartTurn(NextTurn);
+            }
         }
     }
 }

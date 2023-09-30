@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace Alija.Big2.Client.Gameplay
 {
-    public class GameModeResolver
+    public class ParticipantResolver
     {
         private readonly ICardCollection _cardCollection;
 
-        public GameModeResolver(ICardCollection cardCollection)
+        public ParticipantResolver(ICardCollection cardCollection)
         {
             _cardCollection = cardCollection;
         }
@@ -23,18 +23,22 @@ namespace Alija.Big2.Client.Gameplay
                     {
                         new PlayerParticipant(
                             "Player",
+                            ParticipantIdEnum.OpponentOne,
                             _cardCollection),
                         new ComputerParticipant(
                             ParticipantIdEnum.OpponentOne,
                             "Com1",
+                            ParticipantIdEnum.OpponentTwo,
                             _cardCollection),
                         new ComputerParticipant(
                             ParticipantIdEnum.OpponentTwo,
                             "Com2",
+                            ParticipantIdEnum.OpponentThree,
                             _cardCollection),
                         new ComputerParticipant(
                             ParticipantIdEnum.OpponentThree,
                             "Com3",
+                            ParticipantIdEnum.Player,
                             _cardCollection)
                     };
                     return participants;

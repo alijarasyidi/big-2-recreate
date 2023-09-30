@@ -23,7 +23,7 @@ namespace Alija.Big2.Client.Gameplay
 
             builder.RegisterEntryPoint<GameController>(Lifetime.Singleton);
 
-            builder.Register<GameModeResolver>(Lifetime.Singleton);
+            builder.Register<ParticipantResolver>(Lifetime.Singleton);
 
             builder.Register<CardShuffleService>(Lifetime.Singleton)
                 .As<ICardShuffleService>();

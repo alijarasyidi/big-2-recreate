@@ -8,6 +8,7 @@ namespace Alija.Big2.Client.Gameplay
     public abstract class BaseParticipant : IParticipant
     {
         public abstract ParticipantIdEnum Id { get; }
+        public abstract ParticipantIdEnum NextId { get; }
         public string Name => _name;
         public int CardCount => _cardCount;
 
