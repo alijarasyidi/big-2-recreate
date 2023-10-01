@@ -68,7 +68,9 @@ namespace Alija.Big2.Client.Gameplay
             _participantHasMap[participants[firstTurnPlayerIndex].Id].StartTurn(NextTurn);
         }
 
-        private void NextTurn(ParticipantIdEnum currentParticipantId)
+        private void NextTurn(
+            ParticipantIdEnum currentParticipantId,
+            ISubmittableCard submittedCard)
         {
             if (_participantHasMap[currentParticipantId].CardCount <= 0)
             {

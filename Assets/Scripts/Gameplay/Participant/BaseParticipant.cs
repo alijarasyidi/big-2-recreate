@@ -35,6 +35,6 @@ namespace Alija.Big2.Client.Gameplay
             }
         }
 
-        public abstract void StartTurn(Action<ParticipantIdEnum> onDone);
+        public abstract void StartTurn(Action<ParticipantIdEnum, ISubmittableCard> onDone);
     }
 }

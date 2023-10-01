@@ -19,7 +19,7 @@ namespace Alija.Big2.Client.Gameplay
             _nextId = nextParticipantId;
         }
 
-        public override void StartTurn(Action<ParticipantIdEnum> onDone)
+        public override void StartTurn(Action<ParticipantIdEnum, ISubmittableCard> onDone)
         {
             // TODO need to implement player input service
             throw new NotImplementedException();

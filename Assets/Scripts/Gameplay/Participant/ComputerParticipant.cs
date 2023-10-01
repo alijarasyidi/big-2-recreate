@@ -24,7 +24,7 @@ namespace Alija.Big2.Client.Gameplay
             // TODO also resolve computer ai logic here
         }
 
-        public override void StartTurn(Action<ParticipantIdEnum> onDone)
+        public override void StartTurn(Action<ParticipantIdEnum, ISubmittableCard> onDone)
         {
             // TODO delegate play to computer ai logic
             throw new NotImplementedException();
