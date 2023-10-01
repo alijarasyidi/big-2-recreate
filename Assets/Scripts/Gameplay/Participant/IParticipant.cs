@@ -5,14 +5,9 @@ using System.Collections.Generic;
 
 namespace Alija.Big2.Client.Gameplay
 {
-    public interface IParticipant
+    public interface IParticipant : IParticipantInfo
     {
-        ParticipantIdEnum Id { get; }
-        ParticipantIdEnum NextId { get; }
-        string Name { get; }
-        int CardCount { get; }
-
         void SetInitialCardInHandIndex(List<int> initialCardInHandIndex);
-        void StartTurn(Action<ParticipantIdEnum> onDone);
+        void StartTurn(Action<ParticipantIdEnum, ISubmittableCard> onDone);
     }
 }
