@@ -4,9 +4,9 @@ namespace Alija.Big2.Client.Gameplay
 {
     public enum SuiteEnum
     {
-        Spade,
-        Love,
+        Diamond,
         Club,
-        Diamond
+        Love,
+        Spade
     }
 }

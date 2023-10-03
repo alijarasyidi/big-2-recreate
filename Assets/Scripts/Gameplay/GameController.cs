@@ -17,13 +17,16 @@ namespace Alija.Big2.Client.Gameplay
 
         private readonly ParticipantResolver _participantResolver;
         private readonly ICardShuffleService _cardShuffleService;
+        private readonly ITableController _tableController;
 
         public GameController(
             ParticipantResolver participantResolver,
-            ICardShuffleService cardShuffleService)
+            ICardShuffleService cardShuffleService,
+            ITableController tableController)
         {
             _participantResolver = participantResolver;
             _cardShuffleService = cardShuffleService;
+            _tableController = tableController;
         }
 
         public async UniTask StartAsync(CancellationToken cancellation)
@@ -59,12 +62,15 @@ namespace Alija.Big2.Client.Gameplay
                 participants[i].SetInitialCardInHandIndex(shuffleResult[i]);
             }
 
+            List<IParticipantInfo> participantInfos = new();
             _participantHasMap.Clear();
             foreach (var participant in participants)
             {
+                participantInfos.Add(participant);
                 _participantHasMap.Add(participant.Id, participant);
             }
 
+            _tableController.Setup(participantInfos);
             _participantHasMap[participants[firstTurnPlayerIndex].Id].StartTurn(NextTurn);
         }
 
@@ -72,6 +78,8 @@ namespace Alija.Big2.Client.Gameplay
             ParticipantIdEnum currentParticipantId,
             ISubmittableCard submittedCard)
         {
+            _tableController.SubmitCard(currentParticipantId, submittedCard);
+
             if (_participantHasMap[currentParticipantId].CardCount <= 0)
             {
                 // TODO handle game finish

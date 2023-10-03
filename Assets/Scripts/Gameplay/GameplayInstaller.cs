@@ -27,6 +27,15 @@ namespace Alija.Big2.Client.Gameplay
 
             builder.Register<CardShuffleService>(Lifetime.Singleton)
                 .As<ICardShuffleService>();
+
+            builder.Register<SubmittableCombinationService>(Lifetime.Singleton)
+                .As<ISubmittableCombinationService>();
+
+            builder.Register<SubmittableComparator>(Lifetime.Singleton)
+                .As<ISubmittableComparator>();
+
+            builder.Register<TableMaster>(Lifetime.Singleton)
+                .As<ITableController, ITableInfo, ITableEventListener>();
         }
     }
 }
