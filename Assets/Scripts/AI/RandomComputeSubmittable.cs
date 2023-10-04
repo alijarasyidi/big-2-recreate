@@ -72,7 +72,7 @@ namespace Alija.Big2.Client.AI
             }
 
             // TODO consider add delay from config
-            await UniTask.Delay(Random.Range(500, 1500));
+            await UniTask.Delay(Random.Range(2000, 2500));
 
             return choosenSubmittable;
         }

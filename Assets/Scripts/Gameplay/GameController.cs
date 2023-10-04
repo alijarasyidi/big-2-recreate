@@ -20,17 +20,20 @@ namespace Alija.Big2.Client.Gameplay
         private readonly ICardShuffleService _cardShuffleService;
         private readonly ITableController _tableController;
         private readonly ITableView _tableView;
+        private readonly IParticipantView _participantView;
 
         public GameController(
             ParticipantResolver participantResolver,
             ICardShuffleService cardShuffleService,
             ITableController tableController,
-            ITableView tableView)
+            ITableView tableView,
+            IParticipantView participantView)
         {
             _participantResolver = participantResolver;
             _cardShuffleService = cardShuffleService;
             _tableController = tableController;
             _tableView = tableView;
+            _participantView = participantView;
         }
 
         public async UniTask StartAsync(CancellationToken cancellation)
@@ -75,11 +78,14 @@ namespace Alija.Big2.Client.Gameplay
             }
 
             _tableController.Setup(participantInfos);
+            _participantView.Setup(participantInfos);
 
             // TODO provide proper cancellation token
             await _tableView.DoShuffleVisualAsync(shuffleResult, cancellationToken: default);
 
-            _participantHasMap[participants[firstTurnPlayerIndex].Id].StartTurnAsync(
+            var firstPlayerId = participants[firstTurnPlayerIndex].Id;
+            _participantView.StartTurn(firstPlayerId);
+            _participantHasMap[firstPlayerId].StartTurnAsync(
                 NextTurn,
                 cancellationToken: default).Forget();
         }
@@ -111,6 +117,7 @@ namespace Alija.Big2.Client.Gameplay
             else
             {
                 var nextParticipantId = _participantHasMap[currentParticipantId].NextId;
+                _participantView.StartTurn(nextParticipantId);
                 _participantHasMap[nextParticipantId].StartTurnAsync(
                     NextTurn,
                     cancellationToken: default).Forget();
