@@ -1,3 +1,4 @@
+using Alija.Big2.Client.Character;
 using Alija.Big2.Client.PlayerInteraction;
 using Alija.Big2.Client.Screen;
 using Cysharp.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace Alija.Big2.Client.Gameplay
         private readonly IParticipantView _participantView;
         private readonly IPlayerInteractionController _playerInteractionController;
         private readonly ICardCollection _cardCollection;
+        private readonly ICharacterSelectionService _characterSelectionService;
 
         public GameController(
             ParticipantResolver participantResolver,
@@ -32,7 +34,8 @@ namespace Alija.Big2.Client.Gameplay
             ITableView tableView,
             IParticipantView participantView,
             IPlayerInteractionController playerInteractionController,
-            ICardCollection cardCollection)
+            ICardCollection cardCollection,
+            ICharacterSelectionService characterSelectionService)
         {
             _participantResolver = participantResolver;
             _cardShuffleService = cardShuffleService;
@@ -41,6 +44,7 @@ namespace Alija.Big2.Client.Gameplay
             _participantView = participantView;
             _playerInteractionController = playerInteractionController;
             _cardCollection = cardCollection;
+            _characterSelectionService = characterSelectionService;
         }
 
         public async UniTask StartAsync(CancellationToken cancellation)
@@ -60,6 +64,10 @@ namespace Alija.Big2.Client.Gameplay
             {
                 throw new InvalidOperationException("Invalid StartGameAsync call!");
             }
+
+            // TODO will place character selection outside game scene later
+            await _characterSelectionService.ShowSelectCharacterAsync(cancellationToken);
+
 
             _currentState = GameStateEnum.Started;
 
@@ -131,6 +139,7 @@ namespace Alija.Big2.Client.Gameplay
                 // TODO handle game finish
                 Debug.LogFormat("Game finished. Winner: {0}", _participantHasMap[currentParticipantId].Name);
                 _currentState = GameStateEnum.Ended;
+                _participantView.EndGame(currentParticipantId);
             }
             else
             {

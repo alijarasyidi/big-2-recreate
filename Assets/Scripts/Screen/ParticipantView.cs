@@ -1,3 +1,4 @@
+using Alija.Big2.Client.Character;
 using Alija.Big2.Client.Gameplay;
 using System;
 using System.Collections.Generic;
@@ -14,15 +15,18 @@ namespace Alija.Big2.Client.Screen
         private readonly ParticipantPanelCollectionView _participantCollectionView;
         private readonly ITableEventListener _tableEventListener;
         private readonly ITableInfo _tableInfo;
+        private readonly ICharacterSelectionService _characterSelectionService;
 
         public ParticipantView(
             ParticipantPanelCollectionView participantPanelCollectionView,
             ITableEventListener tableEventListener,
-            ITableInfo tableInfo)
+            ITableInfo tableInfo,
+            ICharacterSelectionService characterSelectionService)
         {
             _participantCollectionView = participantPanelCollectionView;
             _tableEventListener = tableEventListener;
             _tableInfo = tableInfo;
+            _characterSelectionService = characterSelectionService;
 
             RegisterEventCallback();
         }
@@ -55,6 +59,11 @@ namespace Alija.Big2.Client.Screen
                 participantView.NameText!.text = participantInfos[i].Name;
                 participantView.CardCountText!.text = participantInfos[i].CardCount.ToString();
                 participantView.CharacterImage!.color = new Color(0f, 0f, 0f, 0.5f);
+
+                if (participantInfos[i].Id == ParticipantIdEnum.Player)
+                {
+                    participantView.CharacterImage!.sprite = _characterSelectionService.GetSelectedCharacter().NormalExpression;
+                }
 
                 participantView.gameObject.SetActive(true);
 
@@ -101,6 +110,41 @@ namespace Alija.Big2.Client.Screen
             else
             {
                 throw new InvalidOperationException("Number of participants are not supported");
+            }
+        }
+
+        public void EndGame(ParticipantIdEnum winnerParticipantId)
+        {
+            foreach (var participantPanel in _participantPanelHashMap)
+            {
+                participantPanel.Value.CharacterImage!.color = new Color(1f, 1f, 1f, 1f);
+
+                if (participantPanel.Key == ParticipantIdEnum.Player)
+                {
+                    if (winnerParticipantId == ParticipantIdEnum.Player)
+                    {
+                        participantPanel.Value.CharacterImage!.sprite = _characterSelectionService
+                            .GetSelectedCharacter().HappyExpression;
+                    }
+                    else
+                    {
+                        participantPanel.Value.CharacterImage!.sprite = _characterSelectionService
+                            .GetSelectedCharacter().SadExpression;
+                    }
+                }
+                else
+                {
+                    if (winnerParticipantId == participantPanel.Key)
+                    {
+                        participantPanel.Value.CharacterImage!.sprite = _characterSelectionService
+                            .GetComputerCharacter().HappyExpression;
+                    }
+                    else
+                    {
+                        participantPanel.Value.CharacterImage!.sprite = _characterSelectionService
+                            .GetComputerCharacter().SadExpression;
+                    }
+                }
             }
         }
     }
