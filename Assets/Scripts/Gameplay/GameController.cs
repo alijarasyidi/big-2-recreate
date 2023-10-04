@@ -79,24 +79,41 @@ namespace Alija.Big2.Client.Gameplay
             // TODO provide proper cancellation token
             await _tableView.DoShuffleVisualAsync(shuffleResult, cancellationToken: default);
 
-            _participantHasMap[participants[firstTurnPlayerIndex].Id].StartTurn(NextTurn);
+            _participantHasMap[participants[firstTurnPlayerIndex].Id].StartTurnAsync(
+                NextTurn,
+                cancellationToken: default).Forget();
         }
 
         private void NextTurn(
             ParticipantIdEnum currentParticipantId,
             ISubmittableCard submittedCard)
         {
+            Debug.LogFormat("{0} submitted:", currentParticipantId);
+            if (submittedCard.Cards != null)
+            {
+                foreach (var card in submittedCard.Cards)
+                {
+                    Debug.LogFormat("{0} {1}", card.Rank, card.Suite);
+                }
+            }
+            Debug.LogFormat(
+                "card left: {0}",
+                _participantHasMap[currentParticipantId].CardCount);
+
             _tableController.SubmitCard(currentParticipantId, submittedCard);
 
             if (_participantHasMap[currentParticipantId].CardCount <= 0)
             {
                 // TODO handle game finish
+                Debug.LogFormat("Game finished. Winner: {0}", _participantHasMap[currentParticipantId].Name);
                 _currentState = GameStateEnum.Ended;
             }
             else
             {
                 var nextParticipantId = _participantHasMap[currentParticipantId].NextId;
-                _participantHasMap[nextParticipantId].StartTurn(NextTurn);
+                _participantHasMap[nextParticipantId].StartTurnAsync(
+                    NextTurn,
+                    cancellationToken: default).Forget();
             }
         }
     }

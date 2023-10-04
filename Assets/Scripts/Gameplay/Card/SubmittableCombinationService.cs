@@ -25,8 +25,23 @@ namespace Alija.Big2.Client.Gameplay
                     PokerHandEnum.Single,
                     new List<Card>() { card }));
 
-                _sameRankCountHashMap[card.Rank].Add(card);
-                _sameSuiteCountHashMap[card.Suite].Add(card);
+                if (!_sameRankCountHashMap.ContainsKey(card.Rank))
+                {
+                    _sameRankCountHashMap.Add(card.Rank, new List<Card>() { card });
+                }
+                else
+                {
+                    _sameRankCountHashMap[card.Rank].Add(card);
+                }
+
+                if (!_sameSuiteCountHashMap.ContainsKey(card.Suite))
+                {
+                    _sameSuiteCountHashMap.Add(card.Suite, new List<Card>() { card });
+                }
+                else
+                {
+                    _sameSuiteCountHashMap[card.Suite].Add(card);
+                }
             }
 
             foreach (var sameRankCard in _sameRankCountHashMap)

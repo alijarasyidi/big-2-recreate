@@ -8,5 +8,6 @@ namespace Alija.Big2.Client.Gameplay
         OpponentOne,
         OpponentTwo,
         OpponentThree,
+        OpponentFour,
     }
 }

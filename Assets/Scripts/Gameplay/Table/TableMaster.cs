@@ -10,6 +10,7 @@ namespace Alija.Big2.Client.Gameplay
         public event Action<List<IParticipantInfo>>? OnTableSetup;
         public event Action<ParticipantIdEnum, ISubmittableCard>? OnCardSubmitted;
         public event Action? OnTableCleared;
+        public event Action? OnRoundEnded;
 
         public ISubmittableCard? CurrentSubmittableCard => _currentSubmittableCard;
         public bool IsFirstRound => _isFirstRound;
@@ -81,6 +82,7 @@ namespace Alija.Big2.Client.Gameplay
                 _isFirstTurn = true;
                 _currentSubmittableCard = null;
                 _consecutionSubmittableNoneCount = 0;
+                OnRoundEnded?.Invoke();
             }
 
             OnCardSubmitted?.Invoke(participantId, submittedCard);

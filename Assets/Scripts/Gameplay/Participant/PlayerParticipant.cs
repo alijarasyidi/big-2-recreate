@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 
 #nullable enable
 
@@ -19,7 +21,9 @@ namespace Alija.Big2.Client.Gameplay
             _nextId = nextParticipantId;
         }
 
-        public override void StartTurn(Action<ParticipantIdEnum, ISubmittableCard> onDone)
+        public override UniTask StartTurnAsync(
+            Action<ParticipantIdEnum, ISubmittableCard> onDone,
+            CancellationToken cancellationToken)
         {
             // TODO need to implement player input service
             throw new NotImplementedException();

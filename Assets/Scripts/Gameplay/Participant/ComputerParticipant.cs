@@ -1,4 +1,7 @@
 using System;
+using System.Threading;
+using Alija.Big2.Client.AI;
+using Cysharp.Threading.Tasks;
 
 #nullable enable
 
@@ -12,22 +15,42 @@ namespace Alija.Big2.Client.Gameplay
         private ParticipantIdEnum _id;
         private ParticipantIdEnum _nextId;
 
+        private readonly ITableInfo _tableInfo;
+        private readonly IComputeSubmittable _computeSubmittable;
+
         public ComputerParticipant(
             ParticipantIdEnum participantId,
             string name,
             ParticipantIdEnum nextParticipantId,
-            ICardCollection cardCollection) : base(name, cardCollection)
+            ICardCollection cardCollection,
+            ITableInfo tableInfo,
+            IComputeSubmittable computeSubmittable) : base(name, cardCollection)
         {
             _id = participantId;
             _nextId = nextParticipantId;
-
-            // TODO also resolve computer ai logic here
+            _tableInfo = tableInfo;
+            _computeSubmittable = computeSubmittable;
         }
 
-        public override void StartTurn(Action<ParticipantIdEnum, ISubmittableCard> onDone)
+        public override async UniTask StartTurnAsync(
+            Action<ParticipantIdEnum, ISubmittableCard> onDone,
+            CancellationToken cancellationToken)
         {
-            // TODO delegate play to computer ai logic
-            throw new NotImplementedException();
+            var submittableCard = await _computeSubmittable.ComputeAsync(
+                _handCard,
+                _tableInfo.IsFirstTurn,
+                _tableInfo.CurrentSubmittableCard ?? null!,
+                cancellationToken: default);
+
+            if (submittableCard.PokerHand != PokerHandEnum.None)
+            {
+                foreach (var card in submittableCard.Cards)
+                {
+                    _handCard.Remove(card);
+                }
+            }
+
+            onDone.Invoke(_id, submittableCard);
         }
     }
 }

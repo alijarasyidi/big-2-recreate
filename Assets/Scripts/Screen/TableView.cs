@@ -8,17 +8,59 @@ using System.Threading;
 
 namespace Alija.Big2.Client.Screen
 {
-    public class TableView : ITableView
+    public class TableView : ITableView, IDisposable
     {
         private readonly ICardCollection _cardCollection;
         private readonly CardPanelCollectionView _cardPanelCollectionView;
+        private readonly ITableEventListener _tableEventListener;
 
         public TableView(
             ICardCollection cardCollection,
-            CardPanelCollectionView cardPanelCollectionView)
+            CardPanelCollectionView cardPanelCollectionView,
+            ITableEventListener tableEventListener)
         {
             _cardCollection = cardCollection;
             _cardPanelCollectionView = cardPanelCollectionView;
+            _tableEventListener = tableEventListener;
+
+            RegisterEventCallback();
+        }
+
+        private void RegisterEventCallback()
+        {
+            _tableEventListener.OnCardSubmitted += OnCardSubmitted;
+            _tableEventListener.OnRoundEnded += OnRoundEnded;
+        }
+
+        private void OnRoundEnded()
+        {
+            foreach (var centerCardView in _cardPanelCollectionView.CenterCardPanel!.CardViews)
+            {
+                centerCardView.gameObject.SetActive(false);
+            }
+        }
+
+        private void OnCardSubmitted(
+            ParticipantIdEnum participantId,
+            ISubmittableCard submittableCard)
+        {
+            if (submittableCard.PokerHand == PokerHandEnum.None)
+            {
+                return;
+            }
+
+            foreach (var centerCardView in _cardPanelCollectionView.CenterCardPanel!.CardViews)
+            {
+                centerCardView.gameObject.SetActive(false);
+            }
+
+            for (int i = 0; i < submittableCard.Cards.Count; i++)
+            {
+                var cardView = submittableCard.Cards[i].CardView;
+                cardView.CardVisualReference!.gameObject.SetActive(false);
+                _cardPanelCollectionView.CenterCardPanel!.CardViews[i].sprite = cardView.Sprite;
+                _cardPanelCollectionView.CenterCardPanel!.CardViews[i].gameObject.SetActive(true);
+            }
         }
 
         public async UniTask DoShuffleVisualAsync(
@@ -46,6 +88,7 @@ namespace Alija.Big2.Client.Screen
                         // TODO make this visual config
                         await UniTask.Delay(50);
                     }
+                    _cardCollection.Cards[participantShuffleResult.Value[i]].CardView.CardVisualReference = cardPanelView.CardViews[i];
                 }
             }
 
@@ -79,6 +122,12 @@ namespace Alija.Big2.Client.Screen
             {
                 throw new InvalidOperationException("Number of participants are not supported");
             }
+        }
+
+        public void Dispose()
+        {
+            _tableEventListener.OnCardSubmitted -= OnCardSubmitted;
+            _tableEventListener.OnRoundEnded -= OnRoundEnded;
         }
     }
 }

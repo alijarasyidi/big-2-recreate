@@ -9,6 +9,7 @@ namespace Alija.Big2.Client.Gameplay
     {
         event Action<List<IParticipantInfo>> OnTableSetup;
         event Action<ParticipantIdEnum, ISubmittableCard> OnCardSubmitted;
+        event Action OnRoundEnded;
         event Action OnTableCleared;
     }
 }
