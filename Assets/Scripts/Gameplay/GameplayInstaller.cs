@@ -34,6 +34,9 @@ namespace Alija.Big2.Client.Gameplay
             builder.Register<SubmittableComparator>(Lifetime.Singleton)
                 .As<ISubmittableComparator>();
 
+            builder.Register<SubmittableIdentifier>(Lifetime.Singleton)
+                .As<ISubmittableIdentifier>();
+
             builder.Register<TableMaster>(Lifetime.Singleton)
                 .As<ITableController, ITableInfo, ITableEventListener>();
         }

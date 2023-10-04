@@ -1,3 +1,4 @@
+using Alija.Big2.Client.PlayerInteraction;
 using Alija.Big2.Client.Screen;
 using Cysharp.Threading.Tasks;
 using System;
@@ -21,19 +22,25 @@ namespace Alija.Big2.Client.Gameplay
         private readonly ITableController _tableController;
         private readonly ITableView _tableView;
         private readonly IParticipantView _participantView;
+        private readonly IPlayerInteractionController _playerInteractionController;
+        private readonly ICardCollection _cardCollection;
 
         public GameController(
             ParticipantResolver participantResolver,
             ICardShuffleService cardShuffleService,
             ITableController tableController,
             ITableView tableView,
-            IParticipantView participantView)
+            IParticipantView participantView,
+            IPlayerInteractionController playerInteractionController,
+            ICardCollection cardCollection)
         {
             _participantResolver = participantResolver;
             _cardShuffleService = cardShuffleService;
             _tableController = tableController;
             _tableView = tableView;
             _participantView = participantView;
+            _playerInteractionController = playerInteractionController;
+            _cardCollection = cardCollection;
         }
 
         public async UniTask StartAsync(CancellationToken cancellation)
@@ -67,6 +74,17 @@ namespace Alija.Big2.Client.Gameplay
             for (int i = 0; i < participants.Count; i++)
             {
                 participants[i].SetInitialCardInHandIndex(shuffleResult[i]);
+            }
+
+            if (participants[0].Id == ParticipantIdEnum.Player)
+            {
+                // TODO consider expose list card on IParticipant
+                List<Card> playerCards = new();
+                foreach (var playerShuffleResult in shuffleResult[0])
+                {
+                    playerCards.Add(_cardCollection.Cards[playerShuffleResult]);
+                }
+                _playerInteractionController.Setup(playerCards);
             }
 
             List<IParticipantInfo> participantInfos = new();
