@@ -1,3 +1,4 @@
+using Alija.Big2.Client.Screen;
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
@@ -18,15 +19,18 @@ namespace Alija.Big2.Client.Gameplay
         private readonly ParticipantResolver _participantResolver;
         private readonly ICardShuffleService _cardShuffleService;
         private readonly ITableController _tableController;
+        private readonly ITableView _tableView;
 
         public GameController(
             ParticipantResolver participantResolver,
             ICardShuffleService cardShuffleService,
-            ITableController tableController)
+            ITableController tableController,
+            ITableView tableView)
         {
             _participantResolver = participantResolver;
             _cardShuffleService = cardShuffleService;
             _tableController = tableController;
+            _tableView = tableView;
         }
 
         public async UniTask StartAsync(CancellationToken cancellation)
@@ -71,6 +75,10 @@ namespace Alija.Big2.Client.Gameplay
             }
 
             _tableController.Setup(participantInfos);
+
+            // TODO provide proper cancellation token
+            await _tableView.DoShuffleVisualAsync(shuffleResult, cancellationToken: default);
+
             _participantHasMap[participants[firstTurnPlayerIndex].Id].StartTurn(NextTurn);
         }
 
