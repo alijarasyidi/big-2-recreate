@@ -26,6 +26,7 @@ namespace Alija.Big2.Client.Gameplay
         private readonly IPlayerInteractionController _playerInteractionController;
         private readonly ICardCollection _cardCollection;
         private readonly ICharacterSelectionService _characterSelectionService;
+        private readonly IResultView _resultView;
 
         public GameController(
             ParticipantResolver participantResolver,
@@ -35,7 +36,8 @@ namespace Alija.Big2.Client.Gameplay
             IParticipantView participantView,
             IPlayerInteractionController playerInteractionController,
             ICardCollection cardCollection,
-            ICharacterSelectionService characterSelectionService)
+            ICharacterSelectionService characterSelectionService,
+            IResultView resultView)
         {
             _participantResolver = participantResolver;
             _cardShuffleService = cardShuffleService;
@@ -45,6 +47,7 @@ namespace Alija.Big2.Client.Gameplay
             _playerInteractionController = playerInteractionController;
             _cardCollection = cardCollection;
             _characterSelectionService = characterSelectionService;
+            _resultView = resultView;
         }
 
         public async UniTask StartAsync(CancellationToken cancellation)
@@ -136,10 +139,10 @@ namespace Alija.Big2.Client.Gameplay
 
             if (_participantHasMap[currentParticipantId].CardCount <= 0)
             {
-                // TODO handle game finish
                 Debug.LogFormat("Game finished. Winner: {0}", _participantHasMap[currentParticipantId].Name);
                 _currentState = GameStateEnum.Ended;
                 _participantView.EndGame(currentParticipantId);
+                _resultView.Show(_participantHasMap[currentParticipantId]);
             }
             else
             {

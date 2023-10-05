@@ -15,6 +15,9 @@ namespace Alija.Big2.Client.Screen
         [SerializeField]
         private ParticipantPanelCollectionView? _participantCollectionView = null;
 
+        [SerializeField]
+        private RestartResultView? _restartResultView = null;
+
         public void Install(IContainerBuilder builder)
         {
             if (_cardPanelCollectionView == null)
@@ -27,9 +30,17 @@ namespace Alija.Big2.Client.Screen
                 throw new InvalidOperationException("Participant Collection Panel View is null!");
             }
 
+            if (_restartResultView == null)
+            {
+                throw new InvalidOperationException("_restartResultView is null");
+            }
+
             builder.RegisterComponent<CardPanelCollectionView>(_cardPanelCollectionView);
 
             builder.RegisterComponent<ParticipantPanelCollectionView>(_participantCollectionView);
+
+            builder.RegisterComponent<RestartResultView>(_restartResultView)
+                .As<IResultView>();
 
             builder.Register<TableView>(Lifetime.Singleton)
                 .As<ITableView>();
